@@ -344,3 +344,25 @@ def run_tests():
 
 
 show_example(run_tests)
+
+
+
+class Batch: 
+
+    def __init__(self, src, target = None, pad = 2): 
+        self.src = src 
+        self.src_mask = (src != pad).unsqueeze(-2)
+        if target is not None: 
+            self.target = target[:, :, :-1] 
+            self.target_y = target[:, 1:] 
+            self.tgt_mask = self.make_std_mask(self.tgt, pad)
+            self.ntokens = (self.tgt_y != pad).data.sum()
+
+
+    def make_std_mask(tgt, pad):
+        "Create a mask to hide padding and future words."
+        tgt_mask = (tgt != pad).unsqueeze(-2)
+        tgt_mask = tgt_mask & sub_mask(tgt.size(-1)).type_as(
+            tgt_mask.data
+        )
+        return tgt_mask
